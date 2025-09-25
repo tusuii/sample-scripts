@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  jenkins-master:
+    image: jenkins/jenkins:lts
+    container_name: jenkins-master
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JENKINS_OPTS=--httpPort=8080
+    networks:
+      - jenkins-network
+
+  jenkins-agent-1:
+    image: jenkins/ssh-agent:latest
+    container_name: jenkins-agent-1
+    volumes:
+      - agent1_workspace:/home/jenkins/agent
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQClLqjLi6Vk27Ee11JANbhhw+wdN8AfStuCuYMbH4kbbi5rYnWpMWR99gCWOT2XFIS7xilj+f0WRAwjyYoWW1M/n5qEPyJj9/vuQ09MtvPLdOkJ2OWo8V2js/ZLguXL90k+/2WNmsJ+i7RK6LD2zL9XVhDPC91ShwE3WSfonXBWArOgG+YOwkofO1plyPFa6+a4BHTq4gFzbRtfK3wbQ+QERjuztVJ6Qb2ZmnAi3UCZ4qaCLQ/jSNUGcam53IHC08Rtu7/eWuQ34x+MTAF4ERPFllDgzVfzzYkPR23ydXBA0fZRVPTy0aFZYrJd8m0mtVU0VlLH4a9mIMIk/Z9Sdd0KCAwN2E6vHZm8Mu4SsFWpTKn9wyOPcJTYjTE2YwRl0sAL5pmzBLgXQ0Go88E0CqHwT0wMmleh16Vpachdc89Wo9CBseUm4GEbsnyRmewUe1RY5aPhpkj4esh7vzFSRCg302lqRFlymsWIt/ZbC0Tq8aU0W7VPgK9NHK9S0aRXerIlzoZykUI6viyK27Rfa6IPvfe3YIM2kMw28d6CLgSeClrxfTtcrF6Kyqrna64uCDbAqhs93urNkQgWQYsYGMlrsHHyK5jcnxE3lDKlQlxzjvXW/7ER0Hmqj5enP1Z1Io9Asz1X337S+xI7HORgGJQkXatY4F+AWr0QBh4+Be6tfw== subodh@Subodh # Replace with your public key
+    networks:
+      - jenkins-network
+    depends_on:
+      - jenkins-master
+
+  jenkins-agent-2:
+    image: jenkins/ssh-agent:latest
+    container_name: jenkins-agent-2
+    volumes:
+      - agent2_workspace:/home/jenkins/agent
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQClLqjLi6Vk27Ee11JANbhhw+wdN8AfStuCuYMbH4kbbi5rYnWpMWR99gCWOT2XFIS7xilj+f0WRAwjyYoWW1M/n5qEPyJj9/vuQ09MtvPLdOkJ2OWo8V2js/ZLguXL90k+/2WNmsJ+i7RK6LD2zL9XVhDPC91ShwE3WSfonXBWArOgG+YOwkofO1plyPFa6+a4BHTq4gFzbRtfK3wbQ+QERjuztVJ6Qb2ZmnAi3UCZ4qaCLQ/jSNUGcam53IHC08Rtu7/eWuQ34x+MTAF4ERPFllDgzVfzzYkPR23ydXBA0fZRVPTy0aFZYrJd8m0mtVU0VlLH4a9mIMIk/Z9Sdd0KCAwN2E6vHZm8Mu4SsFWpTKn9wyOPcJTYjTE2YwRl0sAL5pmzBLgXQ0Go88E0CqHwT0wMmleh16Vpachdc89Wo9CBseUm4GEbsnyRmewUe1RY5aPhpkj4esh7vzFSRCg302lqRFlymsWIt/ZbC0Tq8aU0W7VPgK9NHK9S0aRXerIlzoZykUI6viyK27Rfa6IPvfe3YIM2kMw28d6CLgSeClrxfTtcrF6Kyqrna64uCDbAqhs93urNkQgWQYsYGMlrsHHyK5jcnxE3lDKlQlxzjvXW/7ER0Hmqj5enP1Z1Io9Asz1X337S+xI7HORgGJQkXatY4F+AWr0QBh4+Be6tfw== subodh@Subodh # Replace with your public key
+    networks:
+      - jenkins-network
+    depends_on:
+      - jenkins-master
+
+volumes:
+  jenkins_home:
+  agent1_workspace:
+  agent2_workspace:
+
+networks:
+  jenkins-network:
+    driver: bridge
